@@ -25,6 +25,27 @@
             }
         }
         body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg3); color:var(--text); }
+
+        /* LOGIN */
+        #loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; }
+        .login-card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--rl); padding:2.5rem; max-width:360px; width:92%; text-align:center; }
+        .login-title { font-size:22px; font-weight:500; margin-bottom:8px; }
+        .login-sub { font-size:14px; color:var(--text2); margin-bottom:2rem; }
+        .google-btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:12px; border:0.5px solid var(--border2); border-radius:var(--r); background:var(--bg); color:var(--text); font-size:14px; cursor:pointer; transition:background .2s; }
+        .google-btn:hover { background:var(--bg2); }
+        .google-icon { width:20px; height:20px; }
+        .login-footer { margin-top:1.5rem; font-size:11px; color:var(--text3); }
+
+        /* APP */
+        #appScreen { display:none; }
+        .topbar { background:var(--bg); border-bottom:0.5px solid var(--border); padding:10px 1rem; display:flex; align-items:center; justify-content:space-between; }
+        .topbar-title { font-size:15px; font-weight:500; display:flex; align-items:center; gap:6px; }
+        .user-info { display:flex; align-items:center; gap:8px; }
+        .user-avatar { width:28px; height:28px; border-radius:50%; }
+        .user-name { font-size:12px; color:var(--text2); }
+        .logout-btn { padding:5px 8px; border:0.5px solid var(--border2); background:transparent; border-radius:var(--r); cursor:pointer; font-size:11px; color:var(--text2); }
+        .logout-btn:hover { background:var(--bg-danger); color:var(--danger); }
+
         .app { max-width:1400px; margin:0 auto; padding:1rem; }
         .tabs { display:flex; gap:4px; margin-bottom:1.5rem; border-bottom:0.5px solid var(--border); flex-wrap:wrap; }
         .tab { padding:10px 14px; cursor:pointer; border:none; background:transparent; border-bottom:2px solid transparent; font-size:13px; color:var(--text2); display:flex; align-items:center; gap:5px; transition:all .2s; }
@@ -75,8 +96,6 @@
         .card-date { font-size:11px; color:var(--text2); margin-bottom:3px; }
         .card-text { font-size:13px; margin-bottom:7px; word-break:break-word; }
         .card-actions { display:flex; gap:3px; flex-wrap:wrap; }
-
-        /* MOBILE MOVE BUTTONS */
         .move-btns { display:none; gap:3px; margin-top:6px; }
         @media (pointer:coarse) { .move-btns { display:flex; } }
 
@@ -124,98 +143,129 @@
         .note-title-disp { font-size:14px; font-weight:500; margin-bottom:5px; }
         .note-body-disp { font-size:13px; color:var(--text2); line-height:1.5; margin-bottom:7px; white-space:pre-wrap; }
         .note-foot { font-size:11px; color:var(--text3); display:flex; justify-content:space-between; align-items:center; gap:6px; }
-        .edit-hint { font-size:10px; color:var(--text3); }
         .empty { color:var(--text2); text-align:center; padding:2rem; font-size:13px; }
     </style>
 </head>
 <body>
-<div class="app">
-    <div class="tabs" id="tabBar">
-        <button class="tab active" data-page="tareas"><i class="ti ti-list-check"></i> Mis Tareas</button>
-        <button class="tab" data-page="calendario"><i class="ti ti-calendar"></i> Calendario</button>
-        <button class="tab" data-page="habitos"><i class="ti ti-target"></i> Hábitos</button>
-        <button class="tab" data-page="notas"><i class="ti ti-notes"></i> Notas</button>
-    </div>
-    <div id="status"></div>
 
-    <!-- TAREAS -->
-    <div id="tareas" class="page active">
-        <div class="panel">
-            <div class="ph"><i class="ti ti-list-check"></i> Mis Tareas</div>
-            <label class="lbl">Fecha</label>
-            <div class="dp-wrap">
-                <button type="button" class="dp-btn" id="dpBtn">
-                    <span id="dpTxt">Seleccioná una fecha</span>
-                    <i class="ti ti-calendar" style="font-size:16px;color:var(--text2);"></i>
-                </button>
-                <div class="mini-cal" id="miniCal">
-                    <div class="mc-nav">
-                        <button type="button" class="btn sm" id="mcPrev"><i class="ti ti-chevron-left"></i></button>
-                        <span id="mcLbl"></span>
-                        <button type="button" class="btn sm" id="mcNext"><i class="ti ti-chevron-right"></i></button>
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div style="font-size:36px; margin-bottom:12px;">📋</div>
+        <div class="login-title">Mi Agenda Personal</div>
+        <div class="login-sub">Ingresá con tu cuenta Google para acceder</div>
+        <button class="google-btn" id="googleLoginBtn">
+            <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Ingresar con Google
+        </button>
+        <div class="login-footer">Solo vos podés ver tu agenda</div>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+    <div class="topbar">
+        <div class="topbar-title"><i class="ti ti-list-check"></i> Mi Agenda</div>
+        <div class="user-info">
+            <img class="user-avatar" id="userAvatar" src="" alt="" />
+            <span class="user-name" id="userName"></span>
+            <button class="logout-btn" id="logoutBtn"><i class="ti ti-logout"></i> Salir</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="tabs" id="tabBar">
+            <button class="tab active" data-page="tareas"><i class="ti ti-list-check"></i> Mis Tareas</button>
+            <button class="tab" data-page="calendario"><i class="ti ti-calendar"></i> Calendario</button>
+            <button class="tab" data-page="habitos"><i class="ti ti-target"></i> Hábitos</button>
+            <button class="tab" data-page="notas"><i class="ti ti-notes"></i> Notas</button>
+        </div>
+        <div id="status"></div>
+
+        <!-- TAREAS -->
+        <div id="tareas" class="page active">
+            <div class="panel">
+                <div class="ph"><i class="ti ti-list-check"></i> Mis Tareas</div>
+                <label class="lbl">Fecha</label>
+                <div class="dp-wrap">
+                    <button type="button" class="dp-btn" id="dpBtn">
+                        <span id="dpTxt">Seleccioná una fecha</span>
+                        <i class="ti ti-calendar" style="font-size:16px;color:var(--text2);"></i>
+                    </button>
+                    <div class="mini-cal" id="miniCal">
+                        <div class="mc-nav">
+                            <button type="button" class="btn sm" id="mcPrev"><i class="ti ti-chevron-left"></i></button>
+                            <span id="mcLbl"></span>
+                            <button type="button" class="btn sm" id="mcNext"><i class="ti ti-chevron-right"></i></button>
+                        </div>
+                        <div class="mc-grid" id="mcGrid"></div>
                     </div>
-                    <div class="mc-grid" id="mcGrid"></div>
+                </div>
+                <label class="lbl">Descripción</label>
+                <input type="text" id="taskInput" placeholder="Descripción de la tarea..." />
+                <button type="button" class="btn primary" id="addTaskBtn"><i class="ti ti-plus"></i> Agregar Tarea</button>
+                <div class="week-nav" style="margin-top:1.25rem;">
+                    <button type="button" class="btn sm" id="prevWeekBtn"><i class="ti ti-chevron-left"></i></button>
+                    <div class="week-lbl" id="weekLbl"></div>
+                    <button type="button" class="btn sm" id="nextWeekBtn"><i class="ti ti-chevron-right"></i></button>
+                    <button type="button" class="btn sm" id="thisWeekBtn">Esta semana</button>
+                </div>
+                <div class="kanban" id="kanban"></div>
+            </div>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div id="calendario" class="page">
+            <div class="panel">
+                <div class="ph"><i class="ti ti-calendar"></i> Calendario</div>
+                <div class="cal-nav">
+                    <button type="button" class="btn sm" id="prevMonthBtn"><i class="ti ti-chevron-left"></i></button>
+                    <div id="monthLbl" style="font-size:14px;font-weight:500;min-width:160px;text-align:center;"></div>
+                    <button type="button" class="btn sm" id="nextMonthBtn"><i class="ti ti-chevron-right"></i></button>
+                    <button type="button" class="btn sm" id="thisMonthBtn">Hoy</button>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+            </div>
+        </div>
+
+        <!-- HÁBITOS -->
+        <div id="habitos" class="page">
+            <div class="panel">
+                <div class="ph"><i class="ti ti-target"></i> Mis Hábitos</div>
+                <label class="lbl">Nuevo hábito</label>
+                <input type="text" id="habitInput" placeholder="Nombre del hábito..." />
+                <button type="button" class="btn primary" id="addHabitBtn"><i class="ti ti-plus"></i> Agregar Hábito</button>
+                <div id="habitsList" style="margin-top:1rem;"></div>
+                <div class="stats">
+                    <div class="stat"><div class="stat-lbl">Racha actual</div><div class="stat-val" id="streakVal">0</div></div>
+                    <div class="stat"><div class="stat-lbl">Total completados</div><div class="stat-val" id="totalVal">0</div></div>
                 </div>
             </div>
-            <label class="lbl">Descripción</label>
-            <input type="text" id="taskInput" placeholder="Descripción de la tarea..." />
-            <button type="button" class="btn primary" id="addTaskBtn"><i class="ti ti-plus"></i> Agregar Tarea</button>
-            <div class="week-nav" style="margin-top:1.25rem;">
-                <button type="button" class="btn sm" id="prevWeekBtn"><i class="ti ti-chevron-left"></i></button>
-                <div class="week-lbl" id="weekLbl"></div>
-                <button type="button" class="btn sm" id="nextWeekBtn"><i class="ti ti-chevron-right"></i></button>
-                <button type="button" class="btn sm" id="thisWeekBtn">Esta semana</button>
-            </div>
-            <div class="kanban" id="kanban"></div>
         </div>
-    </div>
 
-    <!-- CALENDARIO -->
-    <div id="calendario" class="page">
-        <div class="panel">
-            <div class="ph"><i class="ti ti-calendar"></i> Calendario</div>
-            <div class="cal-nav">
-                <button type="button" class="btn sm" id="prevMonthBtn"><i class="ti ti-chevron-left"></i></button>
-                <div id="monthLbl" style="font-size:14px;font-weight:500;min-width:160px;text-align:center;"></div>
-                <button type="button" class="btn sm" id="nextMonthBtn"><i class="ti ti-chevron-right"></i></button>
-                <button type="button" class="btn sm" id="thisMonthBtn">Hoy</button>
+        <!-- NOTAS -->
+        <div id="notas" class="page">
+            <div class="panel">
+                <div class="ph"><i class="ti ti-notes"></i> Mis Notas</div>
+                <label class="lbl">Título</label>
+                <input type="text" id="noteTitle" placeholder="Título de la nota..." />
+                <label class="lbl">Contenido</label>
+                <textarea id="noteBody" placeholder="Escribe tu nota aquí..." style="min-height:90px;"></textarea>
+                <button type="button" class="btn primary" id="addNoteBtn"><i class="ti ti-plus"></i> Guardar Nota</button>
+                <div id="notesList" style="margin-top:1rem;"></div>
             </div>
-            <div class="cal-grid" id="calGrid"></div>
-        </div>
-    </div>
-
-    <!-- HÁBITOS -->
-    <div id="habitos" class="page">
-        <div class="panel">
-            <div class="ph"><i class="ti ti-target"></i> Mis Hábitos</div>
-            <label class="lbl">Nuevo hábito</label>
-            <input type="text" id="habitInput" placeholder="Nombre del hábito..." />
-            <button type="button" class="btn primary" id="addHabitBtn"><i class="ti ti-plus"></i> Agregar Hábito</button>
-            <div id="habitsList" style="margin-top:1rem;"></div>
-            <div class="stats">
-                <div class="stat"><div class="stat-lbl">Racha actual</div><div class="stat-val" id="streakVal">0</div></div>
-                <div class="stat"><div class="stat-lbl">Total completados</div><div class="stat-val" id="totalVal">0</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOTAS -->
-    <div id="notas" class="page">
-        <div class="panel">
-            <div class="ph"><i class="ti ti-notes"></i> Mis Notas</div>
-            <label class="lbl">Título</label>
-            <input type="text" id="noteTitle" placeholder="Título de la nota..." />
-            <label class="lbl">Contenido</label>
-            <textarea id="noteBody" placeholder="Escribe tu nota aquí..." style="min-height:90px;"></textarea>
-            <button type="button" class="btn primary" id="addNoteBtn"><i class="ti ti-plus"></i> Guardar Nota</button>
-            <div id="notesList" style="margin-top:1rem;"></div>
         </div>
     </div>
 </div>
 
-<!-- MODAL CALENDARIO -->
+<!-- MODAL -->
 <div class="overlay" id="overlay">
-    <div class="modal" id="modal">
+    <div class="modal">
         <div class="modal-hdr">
             <span id="modalTitle"></span>
             <button type="button" class="btn sm" id="closeModalBtn"><i class="ti ti-x"></i></button>
@@ -227,8 +277,9 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-const db = getDatabase(initializeApp({
+const app = initializeApp({
     apiKey:"AIzaSyBwOk4WRIblXjoFyxFUSXk2RPKWXSY2KuQ",
     authDomain:"tareas-app-b029c.firebaseapp.com",
     projectId:"tareas-app-b029c",
@@ -236,22 +287,54 @@ const db = getDatabase(initializeApp({
     messagingSenderId:"793502877344",
     appId:"1:793502877344:web:3fab494182648ab5cd6bc5",
     databaseURL:"https://tareas-app-b029c-default-rtdb.firebaseio.com"
-}));
+});
 
+const db = getDatabase(app);
+const auth = getAuth(app);
+let currentUID = null;
+
+// ===== AUTH =====
+onAuthStateChanged(auth, user => {
+    if (user) {
+        currentUID = user.uid;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        document.getElementById('userName').textContent = user.displayName;
+        document.getElementById('userAvatar').src = user.photoURL || '';
+        renderKanban(); renderCalendar(); renderHabits(); renderNotes();
+    } else {
+        currentUID = null;
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('appScreen').style.display = 'none';
+    }
+});
+
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+    try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch(e) {
+        alert('Error al iniciar sesión: ' + e.message);
+    }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+// ===== FIREBASE =====
 function setStatus(msg, ok=true) {
     const el=document.getElementById('status');
     el.textContent=msg; el.style.color=ok?'var(--success)':'var(--danger)';
     if(ok) setTimeout(()=>el.textContent='',2500);
 }
 async function fbGet(path) {
-    try { const s=await get(ref(db,path)); const v=s.val(); if(!v) return []; return Array.isArray(v)?v:Object.values(v); }
+    try { const s=await get(ref(db,`users/${currentUID}/${path}`)); const v=s.val(); if(!v) return []; return Array.isArray(v)?v:Object.values(v); }
     catch(e) { setStatus('Sin conexión — datos locales',false); return JSON.parse(localStorage.getItem(path)||'[]'); }
 }
 async function fbSet(path,data) {
-    try { await set(ref(db,path),data); localStorage.setItem(path,JSON.stringify(data)); setStatus('Sincronizado ✓'); }
+    try { await set(ref(db,`users/${currentUID}/${path}`),data); localStorage.setItem(path,JSON.stringify(data)); setStatus('Sincronizado ✓'); }
     catch(e) { localStorage.setItem(path,JSON.stringify(data)); setStatus('Guardado local (sin conexión)',false); }
 }
 
+// ===== UTILS =====
 function isoToday() { return new Date().toISOString().split('T')[0]; }
 function isoToDisp(iso) { if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
 function formatShort(iso) { return new Date(iso+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}); }
@@ -264,8 +347,7 @@ document.getElementById('tabBar').addEventListener('click', e=>{
     const page=btn.dataset.page;
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(page).classList.add('active');
+    btn.classList.add('active'); document.getElementById(page).classList.add('active');
     if(page==='calendario') renderCalendar();
     if(page==='habitos') renderHabits();
     if(page==='notas') renderNotes();
@@ -275,11 +357,11 @@ document.getElementById('tabBar').addEventListener('click', e=>{
 // ===== MINI CAL =====
 let mcDate=new Date(), selISO='';
 function renderMiniCal() {
-    const y=mcDate.getFullYear(), m=mcDate.getMonth();
+    const y=mcDate.getFullYear(),m=mcDate.getMonth();
     document.getElementById('mcLbl').textContent=new Date(y,m).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
     const grid=document.getElementById('mcGrid');
     grid.innerHTML=['D','L','M','M','J','V','S'].map(d=>`<div class="mc-hdr">${d}</div>`).join('');
-    const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(), prev=new Date(y,m,0).getDate(), tod=isoToday();
+    const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),tod=isoToday();
     for(let i=first-1;i>=0;i--) grid.innerHTML+=`<div class="mc-d dim">${prev-i}</div>`;
     for(let d=1;d<=days;d++){
         const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -303,44 +385,16 @@ document.getElementById('prevWeekBtn').addEventListener('click',()=>{ weekStart.
 document.getElementById('nextWeekBtn').addEventListener('click',()=>{ weekStart.setDate(weekStart.getDate()+7); renderKanban(); });
 document.getElementById('thisWeekBtn').addEventListener('click',()=>{ weekStart=getMonday(new Date()); renderKanban(); });
 
-// ===== DRAG & DROP (mouse + touch) =====
+// ===== DRAG & DROP =====
 let dragId=null;
-
 function setupDnD(card, taskId) {
-    // Mouse drag
     card.setAttribute('draggable','true');
     card.addEventListener('dragstart',e=>{ dragId=taskId; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
     card.addEventListener('dragend',()=>{ dragId=null; card.classList.remove('dragging'); });
-
-    // Touch drag
-    let touchStartX=0, touchStartY=0, ghost=null;
-    card.addEventListener('touchstart',e=>{
-        dragId=taskId;
-        const t=e.touches[0]; touchStartX=t.clientX; touchStartY=t.clientY;
-        ghost=card.cloneNode(true);
-        ghost.style.cssText=`position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:${card.offsetWidth}px;left:${card.getBoundingClientRect().left}px;top:${card.getBoundingClientRect().top}px;`;
-        document.body.appendChild(ghost);
-    },{passive:true});
-    card.addEventListener('touchmove',e=>{
-        e.preventDefault();
-        const t=e.touches[0];
-        if(ghost){ ghost.style.left=(t.clientX-card.offsetWidth/2)+'px'; ghost.style.top=(t.clientY-30)+'px'; }
-        document.querySelectorAll('.col').forEach(col=>{
-            const r=col.getBoundingClientRect();
-            if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom)
-                col.classList.add('drag-over');
-            else col.classList.remove('drag-over');
-        });
-    },{passive:false});
-    card.addEventListener('touchend',async e=>{
-        if(ghost){ghost.remove();ghost=null;}
-        document.querySelectorAll('.col').forEach(col=>col.classList.remove('drag-over'));
-        const t=e.changedTouches[0];
-        const el=document.elementFromPoint(t.clientX,t.clientY);
-        const col=el?.closest('.col');
-        if(col&&dragId) await moveTask(dragId, col.dataset.status);
-        dragId=null;
-    });
+    let ghost=null;
+    card.addEventListener('touchstart',e=>{ dragId=taskId; const t=e.touches[0]; ghost=card.cloneNode(true); ghost.style.cssText=`position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:${card.offsetWidth}px;left:${card.getBoundingClientRect().left}px;top:${card.getBoundingClientRect().top}px;`; document.body.appendChild(ghost); },{passive:true});
+    card.addEventListener('touchmove',e=>{ e.preventDefault(); const t=e.touches[0]; if(ghost){ghost.style.left=(t.clientX-card.offsetWidth/2)+'px';ghost.style.top=(t.clientY-30)+'px';} document.querySelectorAll('.col').forEach(col=>{ const r=col.getBoundingClientRect(); if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom) col.classList.add('drag-over'); else col.classList.remove('drag-over'); }); },{passive:false});
+    card.addEventListener('touchend',async e=>{ if(ghost){ghost.remove();ghost=null;} document.querySelectorAll('.col').forEach(col=>col.classList.remove('drag-over')); const t=e.changedTouches[0]; const el=document.elementFromPoint(t.clientX,t.clientY); const col=el?.closest('.col'); if(col&&dragId) await moveTask(dragId,col.dataset.status); dragId=null; });
 }
 
 // ===== TAREAS =====
@@ -351,64 +405,39 @@ document.getElementById('addTaskBtn').addEventListener('click', async ()=>{
     const tasks=await fbGet('tasks');
     tasks.push({id:Date.now(),text,date:selISO,status:'todo'});
     await fbSet('tasks',tasks);
-    document.getElementById('taskInput').value='';
-    selISO=''; document.getElementById('dpTxt').textContent='Seleccioná una fecha';
+    document.getElementById('taskInput').value=''; selISO='';
+    document.getElementById('dpTxt').textContent='Seleccioná una fecha';
     renderKanban(); renderCalendar();
 });
 document.getElementById('taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('addTaskBtn').click(); });
 
-async function delTask(id) {
-    const tasks=await fbGet('tasks');
-    await fbSet('tasks',tasks.filter(t=>t.id!==id));
-    renderKanban(); renderCalendar();
-}
-async function moveTask(id, status) {
-    const tasks=await fbGet('tasks');
-    const t=tasks.find(t=>t.id===id);
-    if(t){t.status=status;await fbSet('tasks',tasks);renderKanban();renderCalendar();}
-}
+async function delTask(id) { const tasks=await fbGet('tasks'); await fbSet('tasks',tasks.filter(t=>t.id!==id)); renderKanban(); renderCalendar(); }
+async function moveTask(id,status) { const tasks=await fbGet('tasks'); const t=tasks.find(t=>t.id===id); if(t){t.status=status;await fbSet('tasks',tasks);renderKanban();renderCalendar();} }
 
 async function renderKanban() {
+    if(!currentUID) return;
     const tasks=await fbGet('tasks');
     const weekEnd=new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6); weekEnd.setHours(23,59,59);
-    document.getElementById('weekLbl').textContent=
-        `${weekStart.toLocaleDateString('es-ES',{day:'numeric',month:'short'})} – ${weekEnd.toLocaleDateString('es-ES',{day:'numeric',month:'short'})}`;
+    document.getElementById('weekLbl').textContent=`${weekStart.toLocaleDateString('es-ES',{day:'numeric',month:'short'})} – ${weekEnd.toLocaleDateString('es-ES',{day:'numeric',month:'short'})}`;
     const wt=tasks.filter(t=>{const d=new Date(t.date+'T00:00:00');return d>=weekStart&&d<=weekEnd;});
     const cols=[{key:'todo',label:'To-Do',icon:'ti-circle'},{key:'inProgress',label:'In Progress',icon:'ti-circle-dotted'},{key:'done',label:'Done',icon:'ti-circle-check'}];
-    const kanban=document.getElementById('kanban');
-    kanban.innerHTML='';
+    const kanban=document.getElementById('kanban'); kanban.innerHTML='';
     cols.forEach(col=>{
         const ct=wt.filter(t=>t.status===col.key);
-        const div=document.createElement('div');
-        div.className='col'; div.dataset.status=col.key;
+        const div=document.createElement('div'); div.className='col'; div.dataset.status=col.key;
         div.innerHTML=`<div class="col-hdr"><i class="ti ${col.icon}"></i> ${col.label} (${ct.length})</div>`;
-        // Mouse drop
         div.addEventListener('dragover',e=>e.preventDefault());
         div.addEventListener('dragenter',()=>div.classList.add('drag-over'));
         div.addEventListener('dragleave',e=>{if(!div.contains(e.relatedTarget))div.classList.remove('drag-over');});
-        div.addEventListener('drop',async e=>{
-            e.preventDefault(); div.classList.remove('drag-over');
-            if(dragId) await moveTask(dragId, col.key);
-        });
+        div.addEventListener('drop',async e=>{ e.preventDefault(); div.classList.remove('drag-over'); if(dragId) await moveTask(dragId,col.key); });
         ct.forEach(t=>{
             const card=document.createElement('div'); card.className='card';
-            const otherCols=cols.filter(c=>c.key!==col.key);
-            card.innerHTML=`
-                <div class="card-id">#${String(t.id).slice(-4)}</div>
-                <div class="card-date">${formatShort(t.date)}</div>
-                <div class="card-text">${t.text}</div>
-                <div class="card-actions">
-                    ${col.key!=='done'?`<button type="button" class="btn sm ok" data-move="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}
-                    <button type="button" class="btn sm del" data-del="${t.id}"><i class="ti ti-x"></i></button>
-                </div>
-                <div class="move-btns">
-                    ${otherCols.map(c=>`<button type="button" class="btn sm" data-tomove="${t.id}" data-tostatus="${c.key}" style="flex:1;justify-content:center;font-size:11px;">→ ${c.label}</button>`).join('')}
-                </div>`;
+            const others=cols.filter(c=>c.key!==col.key);
+            card.innerHTML=`<div class="card-id">#${String(t.id).slice(-4)}</div><div class="card-date">${formatShort(t.date)}</div><div class="card-text">${t.text}</div><div class="card-actions">${col.key!=='done'?`<button type="button" class="btn sm ok" data-move="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}<button type="button" class="btn sm del" data-del="${t.id}"><i class="ti ti-x"></i></button></div><div class="move-btns">${others.map(c=>`<button type="button" class="btn sm" data-tomove="${t.id}" data-tostatus="${c.key}" style="flex:1;justify-content:center;font-size:11px;">→ ${c.label}</button>`).join('')}</div>`;
             card.querySelector('[data-del]')?.addEventListener('click',()=>delTask(t.id));
             card.querySelector('[data-move]')?.addEventListener('click',()=>moveTask(t.id,'done'));
             card.querySelectorAll('[data-tomove]').forEach(btn=>btn.addEventListener('click',()=>moveTask(t.id,btn.dataset.tostatus)));
-            setupDnD(card, t.id);
-            div.appendChild(card);
+            setupDnD(card,t.id); div.appendChild(card);
         });
         kanban.appendChild(div);
     });
@@ -420,6 +449,7 @@ document.getElementById('nextMonthBtn').addEventListener('click',()=>{calDate.se
 document.getElementById('thisMonthBtn').addEventListener('click',()=>{calDate=new Date();renderCalendar();});
 
 async function renderCalendar() {
+    if(!currentUID) return;
     const tasks=await fbGet('tasks');
     const grid=document.getElementById('calGrid');
     const y=calDate.getFullYear(),m=calDate.getMonth();
@@ -434,9 +464,7 @@ async function renderCalendar() {
         const cell=document.createElement('div');
         cell.className='cal-cell'+(iso===tod?' today-cell':'');
         cell.innerHTML=`<div class="cal-num">${day}</div>${dt.length?`<div class="cal-badge">${dt.length} tarea${dt.length>1?'s':''}</div>`:''}`;
-        const snap=[...dt];
-        cell.addEventListener('click',()=>openModal(iso,snap));
-        grid.appendChild(cell);
+        const snap=[...dt]; cell.addEventListener('click',()=>openModal(iso,snap)); grid.appendChild(cell);
     }
     const rem=(first+dim)%7===0?0:7-(first+dim)%7;
     for(let i=1;i<=rem;i++){const c=document.createElement('div');c.className='cal-cell dim';c.innerHTML=`<div class="cal-num">${i}</div>`;grid.appendChild(c);}
@@ -446,24 +474,7 @@ function openModal(iso,dayTasks) {
     document.getElementById('modalTitle').textContent=new Date(iso+'T00:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     const body=document.getElementById('modalBody');
     if(!dayTasks.length){body.innerHTML='<p class="empty">Sin tareas este día</p>';}
-    else{
-        body.innerHTML='';
-        dayTasks.forEach(t=>{
-            const div=document.createElement('div'); div.className='modal-task';
-            div.innerHTML=`
-                <div style="flex:1;">
-                    <div style="font-weight:500;font-size:13px;margin-bottom:4px;">${t.text}</div>
-                    <span class="pill ${pillCls(t.status)}">${statusLabel(t.status)}</span>
-                </div>
-                <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                    ${t.status!=='done'?`<button type="button" class="btn sm ok" data-id="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}
-                </div>`;
-            div.querySelector('[data-id]')?.addEventListener('click',async()=>{
-                await moveTask(t.id,'done'); closeModal(); renderCalendar();
-            });
-            body.appendChild(div);
-        });
-    }
+    else{ body.innerHTML=''; dayTasks.forEach(t=>{ const div=document.createElement('div'); div.className='modal-task'; div.innerHTML=`<div style="flex:1;"><div style="font-weight:500;font-size:13px;margin-bottom:4px;">${t.text}</div><span class="pill ${pillCls(t.status)}">${statusLabel(t.status)}</span></div><div style="display:flex;gap:4px;">${t.status!=='done'?`<button type="button" class="btn sm ok" data-id="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}</div>`; div.querySelector('[data-id]')?.addEventListener('click',async()=>{ await moveTask(t.id,'done'); closeModal(); renderCalendar(); }); body.appendChild(div); }); }
     document.getElementById('overlay').classList.add('on');
 }
 function closeModal(){document.getElementById('overlay').classList.remove('on');}
@@ -472,42 +483,23 @@ document.getElementById('overlay').addEventListener('click',e=>{if(e.target===do
 
 // ===== HÁBITOS =====
 document.getElementById('addHabitBtn').addEventListener('click',async()=>{
-    const input=document.getElementById('habitInput');
-    const name=input.value.trim();
+    const input=document.getElementById('habitInput'); const name=input.value.trim();
     if(!name){alert('Escribí el nombre del hábito');return;}
-    const habits=await fbGet('habits');
-    habits.push({id:Date.now(),name,completed:{},streak:0});
+    const habits=await fbGet('habits'); habits.push({id:Date.now(),name,completed:{},streak:0});
     await fbSet('habits',habits); input.value=''; renderHabits();
 });
 document.getElementById('habitInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('addHabitBtn').click();});
 
 async function renderHabits() {
-    const habits=await fbGet('habits');
-    const list=document.getElementById('habitsList');
+    if(!currentUID) return;
+    const habits=await fbGet('habits'); const list=document.getElementById('habitsList');
     if(!habits.length){list.innerHTML='<p class="empty">Sin hábitos aún. ¡Agregá uno arriba!</p>';updateStats([]);return;}
-    const today=new Date(),tod=isoToday();
-    list.innerHTML='';
+    const today=new Date(),tod=isoToday(); list.innerHTML='';
     habits.forEach(h=>{
-        const days=Array.from({length:30},(_,i)=>{
-            const d=new Date(today);d.setDate(d.getDate()-(29-i));
-            const ds=d.toISOString().split('T')[0];
-            return{ds,done:!!(h.completed&&h.completed[ds]),isToday:(29-i)===0,off:29-i};
-        });
+        const days=Array.from({length:30},(_,i)=>{const d=new Date(today);d.setDate(d.getDate()-(29-i));const ds=d.toISOString().split('T')[0];return{ds,done:!!(h.completed&&h.completed[ds]),isToday:(29-i)===0,off:29-i};});
         const card=document.createElement('div');card.className='habit-card';
-        card.innerHTML=`
-            <div class="habit-hdr">
-                <div><div class="habit-name">${h.name}</div><div class="habit-streak">🔥 Racha: ${h.streak||0} día${(h.streak||0)!==1?'s':''}</div></div>
-                <button type="button" class="btn sm del" data-del="${h.id}"><i class="ti ti-x"></i></button>
-            </div>
-            <div class="hgrid">
-                ${days.map(d=>`<div class="hday${d.done?' done':''}${d.isToday?' hoy':''}" data-off="${d.off}" title="${new Date(d.ds+'T00:00:00').toLocaleDateString('es-ES')}"></div>`).join('')}
-            </div>
-            <button type="button" class="btn sm${h.completed&&h.completed[tod]?' ok':''}" data-hoy="${h.id}" style="width:100%;justify-content:center;">
-                <i class="ti ti-check"></i> Marcar hoy
-            </button>`;
-        card.querySelector('[data-del]').addEventListener('click',async()=>{
-            const habits2=await fbGet('habits');await fbSet('habits',habits2.filter(x=>x.id!==h.id));renderHabits();
-        });
+        card.innerHTML=`<div class="habit-hdr"><div><div class="habit-name">${h.name}</div><div class="habit-streak">🔥 Racha: ${h.streak||0} día${(h.streak||0)!==1?'s':''}</div></div><button type="button" class="btn sm del" data-del="${h.id}"><i class="ti ti-x"></i></button></div><div class="hgrid">${days.map(d=>`<div class="hday${d.done?' done':''}${d.isToday?' hoy':''}" data-off="${d.off}" title="${new Date(d.ds+'T00:00:00').toLocaleDateString('es-ES')}"></div>`).join('')}</div><button type="button" class="btn sm${h.completed&&h.completed[tod]?' ok':''}" data-hoy="${h.id}" style="width:100%;justify-content:center;"><i class="ti ti-check"></i> Marcar hoy</button>`;
+        card.querySelector('[data-del]').addEventListener('click',async()=>{ const h2=await fbGet('habits'); await fbSet('habits',h2.filter(x=>x.id!==h.id)); renderHabits(); });
         card.querySelector('[data-hoy]').addEventListener('click',()=>toggleDay(h.id,0));
         card.querySelectorAll('.hday').forEach(el=>el.addEventListener('click',()=>toggleDay(h.id,parseInt(el.dataset.off))));
         list.appendChild(card);
@@ -515,16 +507,12 @@ async function renderHabits() {
     updateStats(habits);
 }
 async function toggleDay(habitId,offset) {
-    const habits=await fbGet('habits');
-    const h=habits.find(h=>h.id===habitId); if(!h) return;
+    const habits=await fbGet('habits'); const h=habits.find(h=>h.id===habitId); if(!h) return;
     if(!h.completed) h.completed={};
-    const d=new Date();d.setDate(d.getDate()-offset);
-    const ds=d.toISOString().split('T')[0];
+    const d=new Date();d.setDate(d.getDate()-offset); const ds=d.toISOString().split('T')[0];
     if(h.completed[ds]) delete h.completed[ds]; else h.completed[ds]=true;
-    let streak=0;
-    for(let i=0;i<365;i++){const x=new Date();x.setDate(x.getDate()-i);if(h.completed[x.toISOString().split('T')[0]])streak++;else break;}
-    h.streak=streak;
-    await fbSet('habits',habits);renderHabits();
+    let streak=0; for(let i=0;i<365;i++){const x=new Date();x.setDate(x.getDate()-i);if(h.completed[x.toISOString().split('T')[0]])streak++;else break;} h.streak=streak;
+    await fbSet('habits',habits); renderHabits();
 }
 function updateStats(habits) {
     document.getElementById('streakVal').textContent=habits.reduce((a,h)=>Math.max(a,h.streak||0),0);
@@ -533,88 +521,33 @@ function updateStats(habits) {
 
 // ===== NOTAS =====
 document.getElementById('addNoteBtn').addEventListener('click',async()=>{
-    const title=document.getElementById('noteTitle').value.trim();
-    const body=document.getElementById('noteBody').value.trim();
+    const title=document.getElementById('noteTitle').value.trim(); const body=document.getElementById('noteBody').value.trim();
     if(!title||!body){alert('Completá el título y el contenido');return;}
-    const notes=await fbGet('notes');
-    notes.push({id:Date.now(),title,body,date:new Date().toLocaleDateString('es-ES')});
-    await fbSet('notes',notes);
-    document.getElementById('noteTitle').value='';
-    document.getElementById('noteBody').value='';
-    renderNotes();
+    const notes=await fbGet('notes'); notes.push({id:Date.now(),title,body,date:new Date().toLocaleDateString('es-ES')});
+    await fbSet('notes',notes); document.getElementById('noteTitle').value=''; document.getElementById('noteBody').value=''; renderNotes();
 });
 
-async function saveNote(id, newTitle, newBody) {
-    const notes=await fbGet('notes');
-    const n=notes.find(n=>n.id===id);
-    if(n){n.title=newTitle;n.body=newBody;await fbSet('notes',notes);}
-    renderNotes();
-}
-
-async function delNote(id) {
-    const notes=await fbGet('notes');
-    await fbSet('notes',notes.filter(n=>n.id!==id));
-    renderNotes();
-}
-
 async function renderNotes() {
-    const notes=await fbGet('notes');
-    const list=document.getElementById('notesList');
+    if(!currentUID) return;
+    const notes=await fbGet('notes'); const list=document.getElementById('notesList');
     if(!notes.length){list.innerHTML='<p class="empty">Sin notas aún</p>';return;}
-    list.innerHTML='';
-    [...notes].reverse().forEach(n=>{
+    list.innerHTML=''; [...notes].reverse().forEach(n=>{
         const div=document.createElement('div');div.className='note-card';
-        div.innerHTML=`
-            <div class="note-title-disp">${n.title}</div>
-            <div class="note-body-disp">${n.body}</div>
-            <div class="note-foot">
-                <span>${n.date}</span>
-                <div style="display:flex;gap:6px;align-items:center;">
-                    <span class="edit-hint"><i class="ti ti-pencil" style="font-size:12px;"></i> Tap para editar</span>
-                    <button type="button" class="btn sm del" data-del="${n.id}"><i class="ti ti-x"></i></button>
-                </div>
-            </div>`;
-
-        // Click para editar
-        div.addEventListener('click', e=>{
+        div.innerHTML=`<div class="note-title-disp">${n.title}</div><div class="note-body-disp">${n.body}</div><div class="note-foot"><span>${n.date}</span><div style="display:flex;gap:6px;align-items:center;"><span style="font-size:10px;color:var(--text3);"><i class="ti ti-pencil" style="font-size:12px;"></i> Tap para editar</span><button type="button" class="btn sm del" data-del="${n.id}"><i class="ti ti-x"></i></button></div></div>`;
+        div.addEventListener('click',e=>{
             if(e.target.closest('[data-del]')) return;
             if(div.classList.contains('editing')) return;
             div.classList.add('editing');
-            const titleDisp=div.querySelector('.note-title-disp');
-            const bodyDisp=div.querySelector('.note-body-disp');
-            const foot=div.querySelector('.note-foot');
-            const titleVal=titleDisp.textContent;
-            const bodyVal=bodyDisp.textContent;
-            titleDisp.outerHTML=`<input type="text" class="edit-title-input" value="${titleVal.replace(/"/g,'&quot;')}" style="margin-bottom:8px;" />`;
-            bodyDisp.outerHTML=`<textarea class="edit-body-input" style="min-height:80px;margin-bottom:8px;">${bodyVal}</textarea>`;
-            foot.innerHTML=`
-                <span>${n.date}</span>
-                <div style="display:flex;gap:6px;">
-                    <button type="button" class="btn sm ok save-btn"><i class="ti ti-check"></i> Guardar</button>
-                    <button type="button" class="btn sm cancel-btn"><i class="ti ti-x"></i> Cancelar</button>
-                </div>`;
-            div.querySelector('.save-btn').addEventListener('click',async e=>{
-                e.stopPropagation();
-                const nt=div.querySelector('.edit-title-input').value.trim();
-                const nb=div.querySelector('.edit-body-input').value.trim();
-                if(!nt||!nb){alert('Completá título y contenido');return;}
-                await saveNote(n.id,nt,nb);
-            });
-            div.querySelector('.cancel-btn').addEventListener('click',e=>{
-                e.stopPropagation(); renderNotes();
-            });
+            div.querySelector('.note-title-disp').outerHTML=`<input type="text" class="edt" value="${n.title.replace(/"/g,'&quot;')}" style="margin-bottom:8px;"/>`;
+            div.querySelector('.note-body-disp').outerHTML=`<textarea class="edb" style="min-height:80px;margin-bottom:8px;">${n.body}</textarea>`;
+            div.querySelector('.note-foot').innerHTML=`<span>${n.date}</span><div style="display:flex;gap:6px;"><button type="button" class="btn sm ok save-btn"><i class="ti ti-check"></i> Guardar</button><button type="button" class="btn sm cancel-btn"><i class="ti ti-x"></i> Cancelar</button></div>`;
+            div.querySelector('.save-btn').addEventListener('click',async e=>{ e.stopPropagation(); const nt=div.querySelector('.edt').value.trim(); const nb=div.querySelector('.edb').value.trim(); if(!nt||!nb){alert('Completá título y contenido');return;} const notes2=await fbGet('notes'); const nx=notes2.find(x=>x.id===n.id); if(nx){nx.title=nt;nx.body=nb;await fbSet('notes',notes2);} renderNotes(); });
+            div.querySelector('.cancel-btn').addEventListener('click',e=>{e.stopPropagation();renderNotes();});
         });
-
-        div.querySelector('[data-del]').addEventListener('click',e=>{e.stopPropagation();delNote(n.id);});
+        div.querySelector('[data-del]').addEventListener('click',async e=>{ e.stopPropagation(); const notes2=await fbGet('notes'); await fbSet('notes',notes2.filter(x=>x.id!==n.id)); renderNotes(); });
         list.appendChild(div);
     });
 }
-
-// ===== INIT =====
-renderKanban();
-renderCalendar();
-renderHabits();
-renderNotes();
 </script>
 </body>
 </html>
