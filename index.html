@@ -291,10 +291,8 @@ const app = initializeApp({
 
 const db = getDatabase(app);
 const auth = getAuth(app);
-getRedirectResult(auth).catch(()=>{});
 
-// Manejar redirect de vuelta desde Google
-getRedirectResult(auth).catch(e => console.log('redirect result:', e));
+// Manejar resultado de redirect (mobile)
 let currentUID = null;
 
 // ===== AUTH =====
@@ -313,16 +311,25 @@ onAuthStateChanged(auth, user => {
     }
 });
 
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+// En mobile, getRedirectResult captura el login al volver de Google
+getRedirectResult(auth).then(r => {
+    if (r && r.user) console.log('Login redirect OK:', r.user.email);
+}).catch(e => { if(e.code !== 'auth/no-current-user') console.log('redirect err:', e.code); });
+
 document.getElementById('googleLoginBtn').addEventListener('click', async () => {
     try {
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const provider = new GoogleAuthProvider();
         if (isMobile) {
-            await signInWithRedirect(auth, new GoogleAuthProvider());
+            await signInWithRedirect(auth, provider);
         } else {
-            await signInWithPopup(auth, new GoogleAuthProvider());
+            await signInWithPopup(auth, provider);
         }
     } catch(e) {
-        alert('Error al iniciar sesión: ' + e.message);
+        if (e.code !== 'auth/popup-closed-by-user') {
+            alert('Error: ' + e.message);
+        }
     }
 });
 
