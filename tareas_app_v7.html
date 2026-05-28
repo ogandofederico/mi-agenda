@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Agenda Personal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg:#fff; --bg2:#f5f5f5; --bg3:#efefef;
+            --text:#1a1a1a; --text2:#666; --text3:#999;
+            --info:#0066cc; --danger:#cc0000; --success:#008800;
+            --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+            --bg-info:#e6f1fb; --bg-danger:#fcebeb; --bg-success:#e8f5e9;
+            --r:8px; --rl:12px;
+        }
+        @media (prefers-color-scheme:dark) {
+            :root {
+                --bg:#1a1a1a; --bg2:#2d2d2d; --bg3:#0d0d0d;
+                --text:#fff; --text2:#999; --text3:#666;
+                --info:#85b7eb; --danger:#f09595; --success:#81c784;
+                --border:rgba(255,255,255,0.1); --border2:rgba(255,255,255,0.2);
+                --bg-info:#0c447c; --bg-danger:#501313; --bg-success:#1b5e20;
+            }
+        }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg3); color:var(--text); }
+        .app { max-width:1400px; margin:0 auto; padding:1rem; }
+        .tabs { display:flex; gap:4px; margin-bottom:1.5rem; border-bottom:0.5px solid var(--border); flex-wrap:wrap; }
+        .tab { padding:10px 14px; cursor:pointer; border:none; background:transparent; border-bottom:2px solid transparent; font-size:13px; color:var(--text2); display:flex; align-items:center; gap:5px; transition:all .2s; }
+        .tab.active { border-bottom-color:var(--text); color:var(--text); font-weight:500; }
+        .page { display:none; }
+        .page.active { display:block; }
+        .panel { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--rl); padding:1.25rem; margin-bottom:1rem; }
+        .ph { font-size:17px; font-weight:500; margin-bottom:1.25rem; display:flex; align-items:center; gap:7px; }
+        .lbl { font-size:11px; font-weight:500; color:var(--text2); display:block; margin-bottom:5px; }
+        input[type=text], textarea { width:100%; padding:9px 10px; border:0.5px solid var(--border); border-radius:var(--r); font-size:13px; background:var(--bg); color:var(--text); font-family:inherit; margin-bottom:8px; }
+        input:focus, textarea:focus { outline:none; border-color:var(--info); }
+        textarea { resize:vertical; }
+        .btn { padding:9px 12px; border:0.5px solid var(--border2); background:transparent; border-radius:var(--r); cursor:pointer; font-size:13px; color:var(--text); display:inline-flex; align-items:center; gap:5px; transition:background .2s; }
+        .btn:hover { background:var(--bg2); }
+        .btn.primary { background:var(--bg-info); color:var(--info); border:none; width:100%; justify-content:center; margin-bottom:8px; }
+        .btn.sm { padding:5px 8px; font-size:12px; width:auto; }
+        .btn.del { color:var(--danger); }
+        .btn.del:hover { background:var(--bg-danger); }
+        .btn.ok { color:var(--success); }
+        .btn.ok:hover { background:var(--bg-success); }
+        #status { font-size:11px; text-align:right; padding:4px 0 8px; min-height:20px; }
+
+        /* DATE PICKER */
+        .dp-wrap { position:relative; margin-bottom:8px; }
+        .dp-btn { width:100%; padding:9px 10px; border:0.5px solid var(--border); border-radius:var(--r); font-size:13px; background:var(--bg); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+        .dp-btn:hover { border-color:var(--info); }
+        .mini-cal { display:none; position:absolute; top:calc(100% + 4px); left:0; z-index:200; background:var(--bg); border:0.5px solid var(--border2); border-radius:var(--r); padding:10px; box-shadow:0 4px 20px rgba(0,0,0,.15); min-width:260px; }
+        .mini-cal.open { display:block; }
+        .mc-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; font-size:12px; font-weight:500; }
+        .mc-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+        .mc-hdr { text-align:center; font-size:10px; font-weight:500; color:var(--text2); padding:3px; }
+        .mc-d { text-align:center; font-size:12px; padding:5px 2px; border-radius:4px; cursor:pointer; }
+        .mc-d:hover:not(.dim) { background:var(--bg-info); color:var(--info); }
+        .mc-d.sel { background:var(--info); color:#fff !important; }
+        .mc-d.tod { font-weight:700; color:var(--info); }
+        .mc-d.dim { opacity:.3; pointer-events:none; }
+
+        /* KANBAN */
+        .week-nav { display:flex; gap:8px; justify-content:center; align-items:center; margin-bottom:1rem; flex-wrap:wrap; }
+        .week-lbl { font-size:13px; font-weight:500; min-width:160px; text-align:center; }
+        .kanban { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
+        .col { background:var(--bg2); border-radius:var(--r); padding:10px; min-height:350px; }
+        .col.drag-over { background:var(--bg-info); }
+        .col-hdr { font-size:12px; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:5px; }
+        .card { background:var(--bg); border:0.5px solid var(--border); border-radius:var(--r); padding:10px; margin-bottom:7px; touch-action:none; }
+        .card.dragging { opacity:.4; }
+        .card-id { background:var(--bg2); padding:1px 5px; border-radius:3px; font-size:10px; font-weight:500; display:inline-block; margin-bottom:3px; }
+        .card-date { font-size:11px; color:var(--text2); margin-bottom:3px; }
+        .card-text { font-size:13px; margin-bottom:7px; word-break:break-word; }
+        .card-actions { display:flex; gap:3px; flex-wrap:wrap; }
+
+        /* MOBILE MOVE BUTTONS */
+        .move-btns { display:none; gap:3px; margin-top:6px; }
+        @media (pointer:coarse) { .move-btns { display:flex; } }
+
+        /* CALENDARIO */
+        .cal-nav { display:flex; gap:8px; justify-content:center; align-items:center; margin-bottom:1rem; flex-wrap:wrap; }
+        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+        .cal-hdr-d { text-align:center; font-size:11px; font-weight:500; padding:6px; color:var(--text2); }
+        .cal-cell { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:8px 6px; min-height:62px; text-align:center; transition:all .2s; cursor:pointer; }
+        .cal-cell:hover:not(.dim) { background:var(--bg-info); border-color:var(--info); }
+        .cal-cell.today-cell { border:1.5px solid var(--info); }
+        .cal-cell.dim { opacity:.3; pointer-events:none; }
+        .cal-num { font-size:12px; font-weight:500; margin-bottom:4px; }
+        .cal-badge { background:var(--bg-info); color:var(--info); padding:2px 6px; border-radius:3px; font-size:11px; display:inline-block; margin-top:2px; font-weight:500; }
+
+        /* MODAL */
+        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:999; align-items:center; justify-content:center; }
+        .overlay.on { display:flex; }
+        .modal { background:var(--bg); border-radius:var(--rl); padding:1.25rem; max-width:500px; width:92%; max-height:85vh; overflow-y:auto; }
+        .modal-hdr { font-size:15px; font-weight:600; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; }
+        .modal-task { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:10px; display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+        .pill { display:inline-block; padding:2px 7px; border-radius:10px; font-size:11px; }
+        .pill-todo { background:var(--bg2); color:var(--text2); }
+        .pill-prog { background:#fff3cd; color:#856404; }
+        .pill-done { background:var(--bg-success); color:var(--success); }
+
+        /* HABITS */
+        .habit-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:12px; margin-bottom:12px; }
+        .habit-hdr { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+        .habit-name { font-size:14px; font-weight:500; }
+        .habit-streak { font-size:11px; color:var(--text2); margin-top:2px; }
+        .hgrid { display:grid; grid-template-columns:repeat(10,1fr); gap:4px; margin-bottom:8px; }
+        .hday { aspect-ratio:1; border:0.5px solid var(--border); border-radius:3px; background:var(--bg); cursor:pointer; transition:all .15s; }
+        .hday:hover { transform:scale(1.12); }
+        .hday.done { background:var(--bg-success); border-color:var(--success); }
+        .hday.hoy { border:1.5px solid var(--info); }
+        .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:1rem; padding-top:1rem; border-top:0.5px solid var(--border); }
+        .stat { background:var(--bg2); padding:10px; border-radius:var(--r); text-align:center; }
+        .stat-lbl { font-size:11px; color:var(--text2); margin-bottom:4px; }
+        .stat-val { font-size:22px; font-weight:600; }
+
+        /* NOTES */
+        .note-card { background:var(--bg2); border:0.5px solid var(--border); border-radius:var(--r); padding:12px; margin-bottom:10px; cursor:pointer; transition:border-color .2s; }
+        .note-card:hover { border-color:var(--info); }
+        .note-card.editing { border-color:var(--info); background:var(--bg); }
+        .note-title-disp { font-size:14px; font-weight:500; margin-bottom:5px; }
+        .note-body-disp { font-size:13px; color:var(--text2); line-height:1.5; margin-bottom:7px; white-space:pre-wrap; }
+        .note-foot { font-size:11px; color:var(--text3); display:flex; justify-content:space-between; align-items:center; gap:6px; }
+        .edit-hint { font-size:10px; color:var(--text3); }
+        .empty { color:var(--text2); text-align:center; padding:2rem; font-size:13px; }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="tabs" id="tabBar">
+        <button class="tab active" data-page="tareas"><i class="ti ti-list-check"></i> Mis Tareas</button>
+        <button class="tab" data-page="calendario"><i class="ti ti-calendar"></i> Calendario</button>
+        <button class="tab" data-page="habitos"><i class="ti ti-target"></i> Hábitos</button>
+        <button class="tab" data-page="notas"><i class="ti ti-notes"></i> Notas</button>
+    </div>
+    <div id="status"></div>
+
+    <!-- TAREAS -->
+    <div id="tareas" class="page active">
+        <div class="panel">
+            <div class="ph"><i class="ti ti-list-check"></i> Mis Tareas</div>
+            <label class="lbl">Fecha</label>
+            <div class="dp-wrap">
+                <button type="button" class="dp-btn" id="dpBtn">
+                    <span id="dpTxt">Seleccioná una fecha</span>
+                    <i class="ti ti-calendar" style="font-size:16px;color:var(--text2);"></i>
+                </button>
+                <div class="mini-cal" id="miniCal">
+                    <div class="mc-nav">
+                        <button type="button" class="btn sm" id="mcPrev"><i class="ti ti-chevron-left"></i></button>
+                        <span id="mcLbl"></span>
+                        <button type="button" class="btn sm" id="mcNext"><i class="ti ti-chevron-right"></i></button>
+                    </div>
+                    <div class="mc-grid" id="mcGrid"></div>
+                </div>
+            </div>
+            <label class="lbl">Descripción</label>
+            <input type="text" id="taskInput" placeholder="Descripción de la tarea..." />
+            <button type="button" class="btn primary" id="addTaskBtn"><i class="ti ti-plus"></i> Agregar Tarea</button>
+            <div class="week-nav" style="margin-top:1.25rem;">
+                <button type="button" class="btn sm" id="prevWeekBtn"><i class="ti ti-chevron-left"></i></button>
+                <div class="week-lbl" id="weekLbl"></div>
+                <button type="button" class="btn sm" id="nextWeekBtn"><i class="ti ti-chevron-right"></i></button>
+                <button type="button" class="btn sm" id="thisWeekBtn">Esta semana</button>
+            </div>
+            <div class="kanban" id="kanban"></div>
+        </div>
+    </div>
+
+    <!-- CALENDARIO -->
+    <div id="calendario" class="page">
+        <div class="panel">
+            <div class="ph"><i class="ti ti-calendar"></i> Calendario</div>
+            <div class="cal-nav">
+                <button type="button" class="btn sm" id="prevMonthBtn"><i class="ti ti-chevron-left"></i></button>
+                <div id="monthLbl" style="font-size:14px;font-weight:500;min-width:160px;text-align:center;"></div>
+                <button type="button" class="btn sm" id="nextMonthBtn"><i class="ti ti-chevron-right"></i></button>
+                <button type="button" class="btn sm" id="thisMonthBtn">Hoy</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+    </div>
+
+    <!-- HÁBITOS -->
+    <div id="habitos" class="page">
+        <div class="panel">
+            <div class="ph"><i class="ti ti-target"></i> Mis Hábitos</div>
+            <label class="lbl">Nuevo hábito</label>
+            <input type="text" id="habitInput" placeholder="Nombre del hábito..." />
+            <button type="button" class="btn primary" id="addHabitBtn"><i class="ti ti-plus"></i> Agregar Hábito</button>
+            <div id="habitsList" style="margin-top:1rem;"></div>
+            <div class="stats">
+                <div class="stat"><div class="stat-lbl">Racha actual</div><div class="stat-val" id="streakVal">0</div></div>
+                <div class="stat"><div class="stat-lbl">Total completados</div><div class="stat-val" id="totalVal">0</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTAS -->
+    <div id="notas" class="page">
+        <div class="panel">
+            <div class="ph"><i class="ti ti-notes"></i> Mis Notas</div>
+            <label class="lbl">Título</label>
+            <input type="text" id="noteTitle" placeholder="Título de la nota..." />
+            <label class="lbl">Contenido</label>
+            <textarea id="noteBody" placeholder="Escribe tu nota aquí..." style="min-height:90px;"></textarea>
+            <button type="button" class="btn primary" id="addNoteBtn"><i class="ti ti-plus"></i> Guardar Nota</button>
+            <div id="notesList" style="margin-top:1rem;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CALENDARIO -->
+<div class="overlay" id="overlay">
+    <div class="modal" id="modal">
+        <div class="modal-hdr">
+            <span id="modalTitle"></span>
+            <button type="button" class="btn sm" id="closeModalBtn"><i class="ti ti-x"></i></button>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const db = getDatabase(initializeApp({
+    apiKey:"AIzaSyBwOk4WRIblXjoFyxFUSXk2RPKWXSY2KuQ",
+    authDomain:"tareas-app-b029c.firebaseapp.com",
+    projectId:"tareas-app-b029c",
+    storageBucket:"tareas-app-b029c.firebasestorage.app",
+    messagingSenderId:"793502877344",
+    appId:"1:793502877344:web:3fab494182648ab5cd6bc5",
+    databaseURL:"https://tareas-app-b029c-default-rtdb.firebaseio.com"
+}));
+
+function setStatus(msg, ok=true) {
+    const el=document.getElementById('status');
+    el.textContent=msg; el.style.color=ok?'var(--success)':'var(--danger)';
+    if(ok) setTimeout(()=>el.textContent='',2500);
+}
+async function fbGet(path) {
+    try { const s=await get(ref(db,path)); const v=s.val(); if(!v) return []; return Array.isArray(v)?v:Object.values(v); }
+    catch(e) { setStatus('Sin conexión — datos locales',false); return JSON.parse(localStorage.getItem(path)||'[]'); }
+}
+async function fbSet(path,data) {
+    try { await set(ref(db,path),data); localStorage.setItem(path,JSON.stringify(data)); setStatus('Sincronizado ✓'); }
+    catch(e) { localStorage.setItem(path,JSON.stringify(data)); setStatus('Guardado local (sin conexión)',false); }
+}
+
+function isoToday() { return new Date().toISOString().split('T')[0]; }
+function isoToDisp(iso) { if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+function formatShort(iso) { return new Date(iso+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}); }
+function statusLabel(s) { return s==='todo'?'To-Do':s==='inProgress'?'En progreso':'Completado'; }
+function pillCls(s) { return s==='todo'?'pill-todo':s==='inProgress'?'pill-prog':'pill-done'; }
+
+// ===== TABS =====
+document.getElementById('tabBar').addEventListener('click', e=>{
+    const btn=e.target.closest('.tab'); if(!btn) return;
+    const page=btn.dataset.page;
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(page).classList.add('active');
+    if(page==='calendario') renderCalendar();
+    if(page==='habitos') renderHabits();
+    if(page==='notas') renderNotes();
+    if(page==='tareas') renderKanban();
+});
+
+// ===== MINI CAL =====
+let mcDate=new Date(), selISO='';
+function renderMiniCal() {
+    const y=mcDate.getFullYear(), m=mcDate.getMonth();
+    document.getElementById('mcLbl').textContent=new Date(y,m).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+    const grid=document.getElementById('mcGrid');
+    grid.innerHTML=['D','L','M','M','J','V','S'].map(d=>`<div class="mc-hdr">${d}</div>`).join('');
+    const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(), prev=new Date(y,m,0).getDate(), tod=isoToday();
+    for(let i=first-1;i>=0;i--) grid.innerHTML+=`<div class="mc-d dim">${prev-i}</div>`;
+    for(let d=1;d<=days;d++){
+        const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        grid.innerHTML+=`<div class="mc-d${iso===selISO?' sel':''}${iso===tod?' tod':''}" data-iso="${iso}">${d}</div>`;
+    }
+    grid.querySelectorAll('.mc-d:not(.dim)').forEach(el=>el.addEventListener('click',e=>{
+        e.stopPropagation(); selISO=el.dataset.iso;
+        document.getElementById('dpTxt').textContent=isoToDisp(selISO);
+        document.getElementById('miniCal').classList.remove('open'); renderMiniCal();
+    }));
+}
+document.getElementById('dpBtn').addEventListener('click',e=>{ e.stopPropagation(); document.getElementById('miniCal').classList.toggle('open'); renderMiniCal(); });
+document.getElementById('mcPrev').addEventListener('click',e=>{ e.stopPropagation(); mcDate.setMonth(mcDate.getMonth()-1); renderMiniCal(); });
+document.getElementById('mcNext').addEventListener('click',e=>{ e.stopPropagation(); mcDate.setMonth(mcDate.getMonth()+1); renderMiniCal(); });
+document.addEventListener('click',e=>{ if(!e.target.closest('.dp-wrap')) document.getElementById('miniCal').classList.remove('open'); });
+
+// ===== SEMANA =====
+let weekStart=getMonday(new Date()), calDate=new Date();
+function getMonday(d) { const dt=new Date(d),day=dt.getDay(); dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt; }
+document.getElementById('prevWeekBtn').addEventListener('click',()=>{ weekStart.setDate(weekStart.getDate()-7); renderKanban(); });
+document.getElementById('nextWeekBtn').addEventListener('click',()=>{ weekStart.setDate(weekStart.getDate()+7); renderKanban(); });
+document.getElementById('thisWeekBtn').addEventListener('click',()=>{ weekStart=getMonday(new Date()); renderKanban(); });
+
+// ===== DRAG & DROP (mouse + touch) =====
+let dragId=null;
+
+function setupDnD(card, taskId) {
+    // Mouse drag
+    card.setAttribute('draggable','true');
+    card.addEventListener('dragstart',e=>{ dragId=taskId; card.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+    card.addEventListener('dragend',()=>{ dragId=null; card.classList.remove('dragging'); });
+
+    // Touch drag
+    let touchStartX=0, touchStartY=0, ghost=null;
+    card.addEventListener('touchstart',e=>{
+        dragId=taskId;
+        const t=e.touches[0]; touchStartX=t.clientX; touchStartY=t.clientY;
+        ghost=card.cloneNode(true);
+        ghost.style.cssText=`position:fixed;opacity:.7;pointer-events:none;z-index:9999;width:${card.offsetWidth}px;left:${card.getBoundingClientRect().left}px;top:${card.getBoundingClientRect().top}px;`;
+        document.body.appendChild(ghost);
+    },{passive:true});
+    card.addEventListener('touchmove',e=>{
+        e.preventDefault();
+        const t=e.touches[0];
+        if(ghost){ ghost.style.left=(t.clientX-card.offsetWidth/2)+'px'; ghost.style.top=(t.clientY-30)+'px'; }
+        document.querySelectorAll('.col').forEach(col=>{
+            const r=col.getBoundingClientRect();
+            if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom)
+                col.classList.add('drag-over');
+            else col.classList.remove('drag-over');
+        });
+    },{passive:false});
+    card.addEventListener('touchend',async e=>{
+        if(ghost){ghost.remove();ghost=null;}
+        document.querySelectorAll('.col').forEach(col=>col.classList.remove('drag-over'));
+        const t=e.changedTouches[0];
+        const el=document.elementFromPoint(t.clientX,t.clientY);
+        const col=el?.closest('.col');
+        if(col&&dragId) await moveTask(dragId, col.dataset.status);
+        dragId=null;
+    });
+}
+
+// ===== TAREAS =====
+document.getElementById('addTaskBtn').addEventListener('click', async ()=>{
+    const text=document.getElementById('taskInput').value.trim();
+    if(!selISO){alert('Seleccioná una fecha');return;}
+    if(!text){alert('Escribí una descripción');return;}
+    const tasks=await fbGet('tasks');
+    tasks.push({id:Date.now(),text,date:selISO,status:'todo'});
+    await fbSet('tasks',tasks);
+    document.getElementById('taskInput').value='';
+    selISO=''; document.getElementById('dpTxt').textContent='Seleccioná una fecha';
+    renderKanban(); renderCalendar();
+});
+document.getElementById('taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('addTaskBtn').click(); });
+
+async function delTask(id) {
+    const tasks=await fbGet('tasks');
+    await fbSet('tasks',tasks.filter(t=>t.id!==id));
+    renderKanban(); renderCalendar();
+}
+async function moveTask(id, status) {
+    const tasks=await fbGet('tasks');
+    const t=tasks.find(t=>t.id===id);
+    if(t){t.status=status;await fbSet('tasks',tasks);renderKanban();renderCalendar();}
+}
+
+async function renderKanban() {
+    const tasks=await fbGet('tasks');
+    const weekEnd=new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6); weekEnd.setHours(23,59,59);
+    document.getElementById('weekLbl').textContent=
+        `${weekStart.toLocaleDateString('es-ES',{day:'numeric',month:'short'})} – ${weekEnd.toLocaleDateString('es-ES',{day:'numeric',month:'short'})}`;
+    const wt=tasks.filter(t=>{const d=new Date(t.date+'T00:00:00');return d>=weekStart&&d<=weekEnd;});
+    const cols=[{key:'todo',label:'To-Do',icon:'ti-circle'},{key:'inProgress',label:'In Progress',icon:'ti-circle-dotted'},{key:'done',label:'Done',icon:'ti-circle-check'}];
+    const kanban=document.getElementById('kanban');
+    kanban.innerHTML='';
+    cols.forEach(col=>{
+        const ct=wt.filter(t=>t.status===col.key);
+        const div=document.createElement('div');
+        div.className='col'; div.dataset.status=col.key;
+        div.innerHTML=`<div class="col-hdr"><i class="ti ${col.icon}"></i> ${col.label} (${ct.length})</div>`;
+        // Mouse drop
+        div.addEventListener('dragover',e=>e.preventDefault());
+        div.addEventListener('dragenter',()=>div.classList.add('drag-over'));
+        div.addEventListener('dragleave',e=>{if(!div.contains(e.relatedTarget))div.classList.remove('drag-over');});
+        div.addEventListener('drop',async e=>{
+            e.preventDefault(); div.classList.remove('drag-over');
+            if(dragId) await moveTask(dragId, col.key);
+        });
+        ct.forEach(t=>{
+            const card=document.createElement('div'); card.className='card';
+            const otherCols=cols.filter(c=>c.key!==col.key);
+            card.innerHTML=`
+                <div class="card-id">#${String(t.id).slice(-4)}</div>
+                <div class="card-date">${formatShort(t.date)}</div>
+                <div class="card-text">${t.text}</div>
+                <div class="card-actions">
+                    ${col.key!=='done'?`<button type="button" class="btn sm ok" data-move="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}
+                    <button type="button" class="btn sm del" data-del="${t.id}"><i class="ti ti-x"></i></button>
+                </div>
+                <div class="move-btns">
+                    ${otherCols.map(c=>`<button type="button" class="btn sm" data-tomove="${t.id}" data-tostatus="${c.key}" style="flex:1;justify-content:center;font-size:11px;">→ ${c.label}</button>`).join('')}
+                </div>`;
+            card.querySelector('[data-del]')?.addEventListener('click',()=>delTask(t.id));
+            card.querySelector('[data-move]')?.addEventListener('click',()=>moveTask(t.id,'done'));
+            card.querySelectorAll('[data-tomove]').forEach(btn=>btn.addEventListener('click',()=>moveTask(t.id,btn.dataset.tostatus)));
+            setupDnD(card, t.id);
+            div.appendChild(card);
+        });
+        kanban.appendChild(div);
+    });
+}
+
+// ===== CALENDARIO =====
+document.getElementById('prevMonthBtn').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCalendar();});
+document.getElementById('nextMonthBtn').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCalendar();});
+document.getElementById('thisMonthBtn').addEventListener('click',()=>{calDate=new Date();renderCalendar();});
+
+async function renderCalendar() {
+    const tasks=await fbGet('tasks');
+    const grid=document.getElementById('calGrid');
+    const y=calDate.getFullYear(),m=calDate.getMonth();
+    document.getElementById('monthLbl').textContent=new Date(y,m).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+    const first=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),tod=isoToday();
+    grid.innerHTML='';
+    ['Dom','Lun','Mar','Mié','Jue','Vie','Sab'].forEach(d=>{const h=document.createElement('div');h.className='cal-hdr-d';h.textContent=d;grid.appendChild(h);});
+    for(let i=first-1;i>=0;i--){const c=document.createElement('div');c.className='cal-cell dim';c.innerHTML=`<div class="cal-num">${prev-i}</div>`;grid.appendChild(c);}
+    for(let day=1;day<=dim;day++){
+        const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const dt=tasks.filter(t=>t.date===iso);
+        const cell=document.createElement('div');
+        cell.className='cal-cell'+(iso===tod?' today-cell':'');
+        cell.innerHTML=`<div class="cal-num">${day}</div>${dt.length?`<div class="cal-badge">${dt.length} tarea${dt.length>1?'s':''}</div>`:''}`;
+        const snap=[...dt];
+        cell.addEventListener('click',()=>openModal(iso,snap));
+        grid.appendChild(cell);
+    }
+    const rem=(first+dim)%7===0?0:7-(first+dim)%7;
+    for(let i=1;i<=rem;i++){const c=document.createElement('div');c.className='cal-cell dim';c.innerHTML=`<div class="cal-num">${i}</div>`;grid.appendChild(c);}
+}
+
+function openModal(iso,dayTasks) {
+    document.getElementById('modalTitle').textContent=new Date(iso+'T00:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const body=document.getElementById('modalBody');
+    if(!dayTasks.length){body.innerHTML='<p class="empty">Sin tareas este día</p>';}
+    else{
+        body.innerHTML='';
+        dayTasks.forEach(t=>{
+            const div=document.createElement('div'); div.className='modal-task';
+            div.innerHTML=`
+                <div style="flex:1;">
+                    <div style="font-weight:500;font-size:13px;margin-bottom:4px;">${t.text}</div>
+                    <span class="pill ${pillCls(t.status)}">${statusLabel(t.status)}</span>
+                </div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                    ${t.status!=='done'?`<button type="button" class="btn sm ok" data-id="${t.id}"><i class="ti ti-check"></i> Completar</button>`:''}
+                </div>`;
+            div.querySelector('[data-id]')?.addEventListener('click',async()=>{
+                await moveTask(t.id,'done'); closeModal(); renderCalendar();
+            });
+            body.appendChild(div);
+        });
+    }
+    document.getElementById('overlay').classList.add('on');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('on');}
+document.getElementById('closeModalBtn').addEventListener('click',closeModal);
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target===document.getElementById('overlay'))closeModal();});
+
+// ===== HÁBITOS =====
+document.getElementById('addHabitBtn').addEventListener('click',async()=>{
+    const input=document.getElementById('habitInput');
+    const name=input.value.trim();
+    if(!name){alert('Escribí el nombre del hábito');return;}
+    const habits=await fbGet('habits');
+    habits.push({id:Date.now(),name,completed:{},streak:0});
+    await fbSet('habits',habits); input.value=''; renderHabits();
+});
+document.getElementById('habitInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('addHabitBtn').click();});
+
+async function renderHabits() {
+    const habits=await fbGet('habits');
+    const list=document.getElementById('habitsList');
+    if(!habits.length){list.innerHTML='<p class="empty">Sin hábitos aún. ¡Agregá uno arriba!</p>';updateStats([]);return;}
+    const today=new Date(),tod=isoToday();
+    list.innerHTML='';
+    habits.forEach(h=>{
+        const days=Array.from({length:30},(_,i)=>{
+            const d=new Date(today);d.setDate(d.getDate()-(29-i));
+            const ds=d.toISOString().split('T')[0];
+            return{ds,done:!!(h.completed&&h.completed[ds]),isToday:(29-i)===0,off:29-i};
+        });
+        const card=document.createElement('div');card.className='habit-card';
+        card.innerHTML=`
+            <div class="habit-hdr">
+                <div><div class="habit-name">${h.name}</div><div class="habit-streak">🔥 Racha: ${h.streak||0} día${(h.streak||0)!==1?'s':''}</div></div>
+                <button type="button" class="btn sm del" data-del="${h.id}"><i class="ti ti-x"></i></button>
+            </div>
+            <div class="hgrid">
+                ${days.map(d=>`<div class="hday${d.done?' done':''}${d.isToday?' hoy':''}" data-off="${d.off}" title="${new Date(d.ds+'T00:00:00').toLocaleDateString('es-ES')}"></div>`).join('')}
+            </div>
+            <button type="button" class="btn sm${h.completed&&h.completed[tod]?' ok':''}" data-hoy="${h.id}" style="width:100%;justify-content:center;">
+                <i class="ti ti-check"></i> Marcar hoy
+            </button>`;
+        card.querySelector('[data-del]').addEventListener('click',async()=>{
+            const habits2=await fbGet('habits');await fbSet('habits',habits2.filter(x=>x.id!==h.id));renderHabits();
+        });
+        card.querySelector('[data-hoy]').addEventListener('click',()=>toggleDay(h.id,0));
+        card.querySelectorAll('.hday').forEach(el=>el.addEventListener('click',()=>toggleDay(h.id,parseInt(el.dataset.off))));
+        list.appendChild(card);
+    });
+    updateStats(habits);
+}
+async function toggleDay(habitId,offset) {
+    const habits=await fbGet('habits');
+    const h=habits.find(h=>h.id===habitId); if(!h) return;
+    if(!h.completed) h.completed={};
+    const d=new Date();d.setDate(d.getDate()-offset);
+    const ds=d.toISOString().split('T')[0];
+    if(h.completed[ds]) delete h.completed[ds]; else h.completed[ds]=true;
+    let streak=0;
+    for(let i=0;i<365;i++){const x=new Date();x.setDate(x.getDate()-i);if(h.completed[x.toISOString().split('T')[0]])streak++;else break;}
+    h.streak=streak;
+    await fbSet('habits',habits);renderHabits();
+}
+function updateStats(habits) {
+    document.getElementById('streakVal').textContent=habits.reduce((a,h)=>Math.max(a,h.streak||0),0);
+    document.getElementById('totalVal').textContent=habits.reduce((a,h)=>a+Object.keys(h.completed||{}).length,0);
+}
+
+// ===== NOTAS =====
+document.getElementById('addNoteBtn').addEventListener('click',async()=>{
+    const title=document.getElementById('noteTitle').value.trim();
+    const body=document.getElementById('noteBody').value.trim();
+    if(!title||!body){alert('Completá el título y el contenido');return;}
+    const notes=await fbGet('notes');
+    notes.push({id:Date.now(),title,body,date:new Date().toLocaleDateString('es-ES')});
+    await fbSet('notes',notes);
+    document.getElementById('noteTitle').value='';
+    document.getElementById('noteBody').value='';
+    renderNotes();
+});
+
+async function saveNote(id, newTitle, newBody) {
+    const notes=await fbGet('notes');
+    const n=notes.find(n=>n.id===id);
+    if(n){n.title=newTitle;n.body=newBody;await fbSet('notes',notes);}
+    renderNotes();
+}
+
+async function delNote(id) {
+    const notes=await fbGet('notes');
+    await fbSet('notes',notes.filter(n=>n.id!==id));
+    renderNotes();
+}
+
+async function renderNotes() {
+    const notes=await fbGet('notes');
+    const list=document.getElementById('notesList');
+    if(!notes.length){list.innerHTML='<p class="empty">Sin notas aún</p>';return;}
+    list.innerHTML='';
+    [...notes].reverse().forEach(n=>{
+        const div=document.createElement('div');div.className='note-card';
+        div.innerHTML=`
+            <div class="note-title-disp">${n.title}</div>
+            <div class="note-body-disp">${n.body}</div>
+            <div class="note-foot">
+                <span>${n.date}</span>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <span class="edit-hint"><i class="ti ti-pencil" style="font-size:12px;"></i> Tap para editar</span>
+                    <button type="button" class="btn sm del" data-del="${n.id}"><i class="ti ti-x"></i></button>
+                </div>
+            </div>`;
+
+        // Click para editar
+        div.addEventListener('click', e=>{
+            if(e.target.closest('[data-del]')) return;
+            if(div.classList.contains('editing')) return;
+            div.classList.add('editing');
+            const titleDisp=div.querySelector('.note-title-disp');
+            const bodyDisp=div.querySelector('.note-body-disp');
+            const foot=div.querySelector('.note-foot');
+            const titleVal=titleDisp.textContent;
+            const bodyVal=bodyDisp.textContent;
+            titleDisp.outerHTML=`<input type="text" class="edit-title-input" value="${titleVal.replace(/"/g,'&quot;')}" style="margin-bottom:8px;" />`;
+            bodyDisp.outerHTML=`<textarea class="edit-body-input" style="min-height:80px;margin-bottom:8px;">${bodyVal}</textarea>`;
+            foot.innerHTML=`
+                <span>${n.date}</span>
+                <div style="display:flex;gap:6px;">
+                    <button type="button" class="btn sm ok save-btn"><i class="ti ti-check"></i> Guardar</button>
+                    <button type="button" class="btn sm cancel-btn"><i class="ti ti-x"></i> Cancelar</button>
+                </div>`;
+            div.querySelector('.save-btn').addEventListener('click',async e=>{
+                e.stopPropagation();
+                const nt=div.querySelector('.edit-title-input').value.trim();
+                const nb=div.querySelector('.edit-body-input').value.trim();
+                if(!nt||!nb){alert('Completá título y contenido');return;}
+                await saveNote(n.id,nt,nb);
+            });
+            div.querySelector('.cancel-btn').addEventListener('click',e=>{
+                e.stopPropagation(); renderNotes();
+            });
+        });
+
+        div.querySelector('[data-del]').addEventListener('click',e=>{e.stopPropagation();delNote(n.id);});
+        list.appendChild(div);
+    });
+}
+
+// ===== INIT =====
+renderKanban();
+renderCalendar();
+renderHabits();
+renderNotes();
+</script>
+</body>
+</html>
